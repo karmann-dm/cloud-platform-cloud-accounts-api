@@ -51,6 +51,14 @@ publishing {
         }
     }
     publications {
+        maven(MavenPublication) {
+            version = project.version
+            groupId = project.group
+            artifactId = 'cloud-platform-cloud-accounts-api'
+
+            from components.java
+        }
+
         gpr(MavenPublication) {
             from(components.java)
         }
