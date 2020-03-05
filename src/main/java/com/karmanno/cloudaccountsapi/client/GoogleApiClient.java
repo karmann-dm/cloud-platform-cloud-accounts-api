@@ -12,11 +12,11 @@ import java.util.Map;
 
 @FeignClient(
         value = "googleApiClient",
-        url = "https://www.googleapis.com",
+        url = "https://oauth2.googleapis.com",
         configuration = FeignClientConfiguration.class
 )
 public interface GoogleApiClient {
-    @PostMapping(value = "/oauth2/v4/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     GoogleTokenResponse postForToken(
             @RequestBody Map<String, ?> request
     );

@@ -15,31 +15,34 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Mono<String> requestForRegister(String userId, String accountType) {
-        return Mono.just(AccountType.ofName(accountType))
-                .map(this::findSuitableAccountService)
+        return findSuitableAccountService(accountType)
                 .flatMap(service -> service.authPage(userId));
     }
 
     @Override
     public Mono<AccountResponse> register(String type, Object payload) {
-        return Mono.just(AccountType.ofName(type))
-                .map(this::findSuitableAccountService)
+        return findSuitableAccountService(type)
                 .flatMap(service -> service.register(payload))
                 .map(AccountResponse::new);
     }
 
     @Override
     public Mono<AccountResponse> getAccount(String type, String id) {
-        return Mono.just(AccountType.ofName(type))
-                .map(this::findSuitableAccountService)
+        return findSuitableAccountService(type)
                 .flatMap(service -> service.getAccount(id))
                 .map(AccountResponse::new);
     }
 
-    private CloudAccountService findSuitableAccountService(AccountType accountType) {
-        return accountServices.stream()
-                .filter(service -> service.getSupportableType().equals(accountType))
-                .findAny()
-                .orElseThrow(() -> new RuntimeException("Unable to find service suitable for type " + accountType));
+    private Mono<CloudAccountService> findSuitableAccountService(String accountType) {
+        return Mono.just(
+                accountServices.stream()
+                        .filter(service -> service.getSupportableType().equals(
+                                AccountType.ofName(accountType))
+                        )
+                        .findAny()
+                        .orElseThrow(() ->
+                                new RuntimeException("Unable to find service suitable for type " + accountType)
+                        )
+        );
     }
 }

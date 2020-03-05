@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.util.function.Supplier;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,15 +38,33 @@ public class GoogleCloudAccountService implements CloudAccountService {
                         AccountStatus.CONFIRMATION_SENT
                 )
         )
-                .map(googleAccountRequest -> authApiGateway.getToken(googleAccountRequest.getCode()))
-                .flatMap(googleTokenResponse -> accountRequestRepository.findById(confirmRequest.getState())
-                        .map(accountRequest -> (GoogleAccountRequest) accountRequest)
-                        .map(googleAccountRequest -> googleAccountRequest.setAccountStatus(AccountStatus.CONFIRMED))
+                .flatMap(
+                        request ->
+                                authApiGateway.getToken(request.getCode())
+                )
+                .flatMap(
+                        googleTokenResponse ->
+                                accountRequestRepository.findById(confirmRequest.getState()
+                                )
+                        .map(
+                                accountRequest ->
+                                        (GoogleAccountRequest) accountRequest
+                        )
+                        .map(
+                                googleAccountRequest ->
+                                        googleAccountRequest.setAccountStatus(AccountStatus.CONFIRMED)
+                        )
                         .flatMap(accountRequestRepository::save)
-                        .map(savedRequest -> new GoogleCloudAccount(
-                                confirmRequest.getState(),
-                                googleTokenResponse
-                        )))
+                        .map(
+                                savedRequest ->
+                                        new GoogleCloudAccount(
+                                            confirmRequest.getState(),
+                                            googleTokenResponse,
+                                            LocalDateTime.now(),
+                                            LocalDateTime.now()
+                                        )
+                        )
+                )
                 .flatMap(cloudAccountRepository::save);
     }
 

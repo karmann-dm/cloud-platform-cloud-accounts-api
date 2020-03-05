@@ -7,5 +7,4 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface AccountRequestRepository extends ReactiveMongoRepository<AccountRequest, String> {
-    Mono<AccountRequest> findByUserIdAndType(String userId, String type);
 }
