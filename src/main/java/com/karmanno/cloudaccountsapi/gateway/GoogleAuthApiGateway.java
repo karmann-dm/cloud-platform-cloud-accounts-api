@@ -18,6 +18,7 @@ public class GoogleAuthApiGateway {
     private final GoogleClientProperties googleClientProperties;
 
     /**
+     * Fetch OAuth token from Google
      *
      * EXAMPLE:
      *
@@ -40,13 +41,15 @@ public class GoogleAuthApiGateway {
                     put("code", code);
                     put("client_id", googleClientProperties.getId());
                     put("client_secret", googleClientProperties.getSecret());
-                    put("redirect_uri", String.format("http://localhost:8080/account/confirm/%s", "google"));
+                    put("redirect_uri", String.format("http://localhost:8080/account/confirm/%s", "google")); // TODO: how dare you
                     put("grant_type", "authorization_code");
                 }}
         )).doOnError(e -> log.error("Error while sending request for Google OAuth token", e));
     }
 
     /**
+     * Refresh OAuth token from Google
+     *
      * EXAMPLE:
      *
      * POST /token HTTP/1.1

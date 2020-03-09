@@ -26,6 +26,7 @@ public class GoogleCloudAccountService implements CloudAccountService {
     private final GoogleClientProperties googleClientProperties;
     private final UriQueryConverter uriQueryConverter;
 
+    // TODO: Error handling
     @Override
     public Mono<CloudAccount> register(Object payload) {
         String confirmRequestQuery = (String) payload;
@@ -80,16 +81,16 @@ public class GoogleCloudAccountService implements CloudAccountService {
 
     @Override
     public Mono<CloudAccount> getAccount(String id) {
-        return Mono.empty();
+        return cloudAccountRepository.findById(id);
     }
 
     private String generateAuthUrl(String userId) {
-        return UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
-                .queryParam("response_type", "code")
-                .queryParam("redirect_uri", String.format("http://localhost:8080/account/confirm/%s", "google"))
-                .queryParam("scope", "https://www.googleapis.com/auth/drive")
+        return UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth") // TODO: Fix hardcoded values
+                .queryParam("response_type", "code") // TODO: Always code?
+                .queryParam("redirect_uri", String.format("http://localhost:8080/account/confirm/%s", "google")) // TODO: Fix hardcoded values
+                .queryParam("scope", "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile") // TODO: Fix hardcoded valuse
                 .queryParam("state", userId)
-                .queryParam("access_type", "offline")
+                .queryParam("access_type", "offline") // TODO: Always offline?
                 .queryParam("client_id", googleClientProperties.getId())
                 .build()
                 .toUriString();
