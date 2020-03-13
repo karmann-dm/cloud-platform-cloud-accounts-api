@@ -1,6 +1,7 @@
 package com.karmanno.cloudaccountsapi.service;
 
-import com.karmanno.cloudaccountsapi.domain.*;
+import com.karmanno.cloudaccountsapi.domain.AccountType;
+import com.karmanno.cloudaccountsapi.domain.CloudAccount;
 import com.karmanno.cloudaccountsapi.dto.GoogleConfirmRequest;
 import com.karmanno.cloudaccountsapi.properties.GoogleClientProperties;
 import com.karmanno.cloudaccountsapi.repository.CloudAccountRepository;
@@ -10,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +19,6 @@ public class GoogleCloudAccountService implements CloudAccountService {
     private final GoogleClientProperties googleClientProperties;
     private final UriQueryConverter uriQueryConverter;
 
-    // TODO: Error handling
     @Override
     public CloudAccount register(Object payload) {
         String confirmRequestQuery = (String) payload;
