@@ -38,41 +38,42 @@ public class GoogleCloudAccountService implements CloudAccountService {
         6. Save account with auth token and user in repository and return all required data
          */
 
-        return accountRequestRepository.save(
-                new GoogleAccountRequest(
-                        confirmRequest.getState(),
-                        confirmRequest.getCode(),
-                        AccountRequestStatus.CONFIRMATION_SENT
-                )
-        )
-                .flatMap(request -> authApiGateway.getToken(request.getCode()))
-                .flatMap(
-                        googleTokenResponse ->
-                                accountRequestRepository.findById(confirmRequest.getState()
-                                )
-                        .map(accountRequest -> (GoogleAccountRequest) accountRequest)
-                        .map(
-                                googleAccountRequest ->
-                                        googleAccountRequest.setAccountRequestStatus(AccountRequestStatus.CONFIRMED)
-                        )
-                        .flatMap(accountRequestRepository::save)
-                        .map(
-                                savedRequest ->
-                                        new GoogleCloudAccount(
-                                            confirmRequest.getState(),
-                                            googleTokenResponse,
-                                            LocalDateTime.now(),
-                                            LocalDateTime.now()
-                                        )
-                        )
-                )
-                .flatMap(googleCloudAccount -> accountInfoApiGateway.getUserInfo(
-                        googleCloudAccount.getToken().getAccessToken()
-                )
-                .flatMap(googleUserInfoResponse -> {
-                    googleCloudAccount.setUserInfo(googleUserInfoResponse);
-                    return cloudAccountRepository.save(googleCloudAccount);
-                }));
+//        return accountRequestRepository.save(
+//                new GoogleAccountRequest(
+//                        confirmRequest.getState(),
+//                        confirmRequest.getCode(),
+//                        AccountRequestStatus.CONFIRMATION_SENT
+//                )
+//        )
+//                .flatMap(request -> authApiGateway.getToken(request.getCode()))
+//                .flatMap(
+//                        googleTokenResponse ->
+//                                accountRequestRepository.findById(confirmRequest.getState()
+//                                )
+//                        .map(accountRequest -> (GoogleAccountRequest) accountRequest)
+//                        .map(
+//                                googleAccountRequest ->
+//                                        googleAccountRequest.setAccountRequestStatus(AccountRequestStatus.CONFIRMED)
+//                        )
+//                        .flatMap(accountRequestRepository::save)
+//                        .map(
+//                                savedRequest ->
+//                                        new GoogleCloudAccount(
+//                                            confirmRequest.getState(),
+//                                            googleTokenResponse,
+//                                            LocalDateTime.now(),
+//                                            LocalDateTime.now()
+//                                        )
+//                        )
+//                )
+//                .flatMap(googleCloudAccount -> accountInfoApiGateway.getUserInfo(
+//                        googleCloudAccount.getToken().getAccessToken()
+//                )
+//                .flatMap(googleUserInfoResponse -> {
+//                    googleCloudAccount.setUserInfo(googleUserInfoResponse);
+//                    return cloudAccountRepository.save(googleCloudAccount);
+//                }));
+        return null;
     }
 
     @Override

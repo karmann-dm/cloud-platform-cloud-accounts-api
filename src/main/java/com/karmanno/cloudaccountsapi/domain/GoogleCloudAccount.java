@@ -1,7 +1,5 @@
 package com.karmanno.cloudaccountsapi.domain;
 
-import com.karmanno.cloudaccountsapi.dto.GoogleTokenResponse;
-import com.karmanno.cloudaccountsapi.dto.GoogleUserInfoResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,13 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GoogleCloudAccount implements CloudAccount {
     private String userId;
-    private GoogleTokenResponse token;
-    private GoogleUserInfoResponse userInfo;
+    private GoogleTokenInfo token;
+    private GoogleUserInfo userInfo;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public GoogleCloudAccount(String userId,
-                              GoogleTokenResponse token,
+                              GoogleTokenInfo token,
                               LocalDateTime createdAt,
                               LocalDateTime modifiedAt) {
         this.userId = userId;
