@@ -2,3 +2,9 @@ google:
   client:
     id: 212682554544-9tvsgg7bae0k980pq0d6nfuke77tc0pi.apps.googleusercontent.com
     secret: aMrXObn2qk2NDjfgSAK8JauU
+
+kafka:
+  bootstrapServers: localhost:1234
+  producer:
+    keySerializer: org.apache.kafka.common.serialization.StringSerializer
+    valueSerializer: org.apache.kafka.common.serialization.StringSerializer

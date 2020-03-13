@@ -2,58 +2,58 @@ package com.karmanno.cloudaccountsapi.service;
 
 import com.karmanno.cloudaccountsapi.domain.*;
 import com.karmanno.cloudaccountsapi.dto.GoogleConfirmRequest;
-import com.karmanno.cloudaccountsapi.gateway.GoogleAuthApiGateway;
 import com.karmanno.cloudaccountsapi.properties.GoogleClientProperties;
-import com.karmanno.cloudaccountsapi.repository.AccountRequestRepository;
 import com.karmanno.cloudaccountsapi.repository.CloudAccountRepository;
 import com.karmanno.cloudaccountsapi.util.UriQueryConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class GoogleCloudAccountService implements CloudAccountService {
-    private final GoogleAuthApiGateway authApiGateway;
-    private final AccountRequestRepository accountRequestRepository;
     private final CloudAccountRepository cloudAccountRepository;
     private final GoogleClientProperties googleClientProperties;
     private final UriQueryConverter uriQueryConverter;
 
     // TODO: Error handling
     @Override
-    public Mono<CloudAccount> register(Object payload) {
+    public CloudAccount register(Object payload) {
         String confirmRequestQuery = (String) payload;
         log.info("Confirmed request for Google account with payload {}", confirmRequestQuery);
+
         GoogleConfirmRequest confirmRequest = uriQueryConverter.convertGoogleRequest(confirmRequestQuery);
+
+        /*
+        Steps:
+        1. Create request for account creation
+        2. Delegate request creation to the cloud-platform-cloud-account-requests-api with event
+        3. Catch event of successful request or error while performing the request with auth token
+        4. Fetch user info by calling cloud-platform-cloud-accounts-user-info-api with event
+        5. Catch event with user data
+        6. Save account with auth token and user in repository and return all required data
+         */
+
         return accountRequestRepository.save(
                 new GoogleAccountRequest(
                         confirmRequest.getState(),
                         confirmRequest.getCode(),
-                        AccountStatus.CONFIRMATION_SENT
+                        AccountRequestStatus.CONFIRMATION_SENT
                 )
         )
-                .flatMap(
-                        request ->
-                                authApiGateway.getToken(request.getCode())
-                )
+                .flatMap(request -> authApiGateway.getToken(request.getCode()))
                 .flatMap(
                         googleTokenResponse ->
                                 accountRequestRepository.findById(confirmRequest.getState()
                                 )
-                        .map(
-                                accountRequest ->
-                                        (GoogleAccountRequest) accountRequest
-                        )
+                        .map(accountRequest -> (GoogleAccountRequest) accountRequest)
                         .map(
                                 googleAccountRequest ->
-                                        googleAccountRequest.setAccountStatus(AccountStatus.CONFIRMED)
+                                        googleAccountRequest.setAccountRequestStatus(AccountRequestStatus.CONFIRMED)
                         )
                         .flatMap(accountRequestRepository::save)
                         .map(
@@ -66,7 +66,13 @@ public class GoogleCloudAccountService implements CloudAccountService {
                                         )
                         )
                 )
-                .flatMap(cloudAccountRepository::save);
+                .flatMap(googleCloudAccount -> accountInfoApiGateway.getUserInfo(
+                        googleCloudAccount.getToken().getAccessToken()
+                )
+                .flatMap(googleUserInfoResponse -> {
+                    googleCloudAccount.setUserInfo(googleUserInfoResponse);
+                    return cloudAccountRepository.save(googleCloudAccount);
+                }));
     }
 
     @Override
@@ -75,13 +81,16 @@ public class GoogleCloudAccountService implements CloudAccountService {
     }
 
     @Override
-    public Mono<String> authPage(String userId) {
-        return Mono.just(generateAuthUrl(userId));
+    public String authPage(String userId) {
+        return generateAuthUrl(userId);
     }
 
     @Override
-    public Mono<CloudAccount> getAccount(String id) {
-        return cloudAccountRepository.findById(id);
+    public CloudAccount getAccount(String id) {
+        return cloudAccountRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(String.format("Account with id = %s not found", id))
+                );
     }
 
     private String generateAuthUrl(String userId) {

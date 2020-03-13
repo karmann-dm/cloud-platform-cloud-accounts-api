@@ -2,7 +2,6 @@ plugins {
     id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
-    id 'maven-publish'
 }
 
 group = 'com.karmanno'
@@ -20,15 +19,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.kafka:spring-kafka:2.2.7.RELEASE'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'com.github.tomakehurst:wiremock-jre8:2.25.1'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
 }
@@ -36,31 +35,5 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-starter-parent:Greenwich.SR4"
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/karmann-dm")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("PASSWORD")
-            }
-        }
-    }
-    publications {
-        maven(MavenPublication) {
-            version = project.version
-            groupId = project.group
-            artifactId = 'cloud-platform-cloud-accounts-api'
-
-            from components.java
-        }
-
-        gpr(MavenPublication) {
-            from(components.java)
-        }
     }
 }
