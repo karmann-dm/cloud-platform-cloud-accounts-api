@@ -20,8 +20,8 @@ repositories {
         name = "GitHubPackages"
         url = uri("https://maven.pkg.github.com/karmann-dm/cloud-platform-event-engine-starter")
         credentials {
-            username = 'karmann-dm'
-            password = '230fde747fd5ca0c72c06d7d7acbf959889b5539'
+            username = "${githubUsername}"
+            password = "${githubToken}"
         }
     }
 }
