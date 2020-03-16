@@ -8,4 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GoogleClientProperties {
     private String id;
     private String secret;
+    private String authUrl;
+    private String responseType;
+    private String redirectUri;
+    private String scope;
+    private String accessType;
 }

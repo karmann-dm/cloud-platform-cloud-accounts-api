@@ -16,16 +16,6 @@ public class GoogleCloudAccount implements CloudAccount {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public GoogleCloudAccount(String userId,
-                              GoogleTokenInfo token,
-                              LocalDateTime createdAt,
-                              LocalDateTime modifiedAt) {
-        this.userId = userId;
-        this.token = token;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-    }
-
     @Override
     public String getId() {
         return userId;

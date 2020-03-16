@@ -7,7 +7,7 @@ public interface CloudAccountService {
 
     String authPage(String userId);
 
-    CloudAccount register(Object payload);
+    String register(Object payload);
 
     CloudAccount getAccount(String id);
 

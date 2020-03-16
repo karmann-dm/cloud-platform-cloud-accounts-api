@@ -6,7 +6,7 @@ public interface AccountService {
 
     String requestForRegister(String userId, String accountType);
 
-    AccountResponse register(String type, Object payload);
+    String register(String type, Object payload);
 
     AccountResponse getAccount(String type, String id);
 

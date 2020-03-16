@@ -19,11 +19,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse register(String type, Object payload) {
-        return new AccountResponse(
-                findSuitableAccountService(type)
-                        .register(payload)
-        );
+    public String register(String type, Object payload) {
+        return findSuitableAccountService(type)
+                .register(payload);
     }
 
     @Override

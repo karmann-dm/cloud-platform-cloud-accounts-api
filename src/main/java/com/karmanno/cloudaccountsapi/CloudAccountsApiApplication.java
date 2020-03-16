@@ -2,6 +2,7 @@ package com.karmanno.cloudaccountsapi;
 
 import com.karmanno.cloudaccountsapi.properties.GoogleClientProperties;
 import com.karmanno.cloudaccountsapi.properties.KafkaClientProperties;
+import com.karmanno.cloudplatform.events.EventsProperties;
 import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,8 @@ import org.springframework.context.annotation.Bean;
 @EnableFeignClients
 @EnableConfigurationProperties({
         GoogleClientProperties.class,
-        KafkaClientProperties.class
+        KafkaClientProperties.class,
+        EventsProperties.class
 })
 public class CloudAccountsApiApplication {
 

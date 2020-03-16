@@ -2,9 +2,30 @@ google:
   client:
     id: 212682554544-9tvsgg7bae0k980pq0d6nfuke77tc0pi.apps.googleusercontent.com
     secret: aMrXObn2qk2NDjfgSAK8JauU
+    authUrl: "https://accounts.google.com/o/oauth2/v2/auth"
+    responseType: 'code'
+    redirectUri: "http://${CLOUD_ACCOUNTS_API_HOST}/account/confirm/google"
+    scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile"
+    accessType: "offline"
 
-kafka:
-  bootstrapServers: localhost:1234
-  producer:
-    keySerializer: org.apache.kafka.common.serialization.StringSerializer
-    valueSerializer: org.apache.kafka.common.serialization.StringSerializer
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: ${KAFKA_HOST}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+events:
+  enabled: true
+  topics:
+    CREATE_ACCOUNT: com.karmanno.cloudaccountsapi.domain.GoogleCreateAccountEvent
+
+---
+spring:
+  profiles: test
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
